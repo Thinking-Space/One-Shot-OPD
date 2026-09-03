@@ -2,109 +2,36 @@
   <h1>Rethinking On-Policy Distillation of Large Language Models II: One Training Example</h1>
   <p>
     <a href="https://arxiv.org/abs/XXXX.XXXXX"><img src="https://img.shields.io/badge/paper-A42C25?style=for-the-badge&amp;logo=arxiv&amp;logoColor=white" alt="Paper"></a>&nbsp;&nbsp;
-    <a href="https://github.com/Thinking-Space/One-Shot-OPD"><img src="https://img.shields.io/badge/thunlp%2FOne--Shot--OPD-000000?style=for-the-badge&amp;logo=github&amp;logoColor=white" alt="GitHub"></a>&nbsp;&nbsp;
+    <a href="https://github.com/Thinking-Space/One-Shot-OPD"><img src="https://img.shields.io/badge/One--Shot--OPD-000000?style=for-the-badge&amp;logo=github&amp;logoColor=white" alt="GitHub"></a>&nbsp;&nbsp;
     <a href="https://huggingface.co/papers/XXXX.XXXXX"><img src="https://img.shields.io/badge/HF--Paper-%23FFD14D?style=for-the-badge&amp;logo=huggingface&amp;logoColor=black" alt="Hugging Face Paper"></a>&nbsp;&nbsp;
     <a href="https://huggingface.co/collections/Thinking-Space/one-shot-opd"><img src="https://img.shields.io/badge/Collection-%23FFD14D?style=for-the-badge&amp;logo=huggingface&amp;logoColor=black" alt="Hugging Face Collection"></a>
   </p>
 </div>
-
-
 <div align="center">
   <p>
     <a href="#news">🎉 News</a> •
-    <a href="#links">🔗 Links</a> •
-    <a href="#introduction">📖 Introduction</a> •
-    <a href="#key-findings">🔍 Key Findings</a>
-  </p>
-  <p>
-    <a href="#getting-started">✨ Getting Started</a> •
+    <a href="#Overview">📖 Introduction</a> •
+    <a href="#getting-started">✨ Getting Started</a>
+ </p>
+ <p>
     <a href="#contact">📨 Contact</a> •
-    <a href="#citation">🎈 Citation</a> •
-    <a href="#Acknowledgement">🌻 Acknowledgement</a>
-
-  </p>
+    <a href="#citation">🎈 Citation</a> 
+ </p>
 </div>
-
-
 ---
 
 ## 🎉News
 
-- **[2026-xx-xx]** Our paper is on arXiv. Check it out: [Paper](https://arxiv.org/abs/XXXX.XXXXX).
-- **[2026-09-03]** Initial release of the OPD and MOPD training and evaluation code, implemented in [veRL](https://github.com/volcengine/verl).
-
-<a id="links"></a>
-
-## 🔗Links
-
-- 📜 [Paper](https://arxiv.org/abs/XXXX.XXXXX)
-- 🤗 [Hugging Face Paper Page](https://huggingface.co/papers/XXXX.XXXXX)
-- 🤗 [Resource Collection](https://huggingface.co/collections/Thinking-Space/one-shot-opd)
-- 💻 [GitHub](https://github.com/Thinking-Space/One-Shot-OPD)
-- 📕 Part I of this series: [Rethinking On-Policy Distillation of Large Language Models](https://arxiv.org/abs/2604.13016)
+- **[2026-09-04]** Part II: We examine the role of training data in on-policy distillation (OPD) at the data-minimal limit by training on a single query, and find that OPD is data-overfed but algorithm-starved. Check it out: [Paper](https://arxiv.org/abs/XXXX.XXXXX).
+- **[2026-04-15]** Part I of this series: [Rethinking On-Policy Distillation of Large Language Models](https://arxiv.org/abs/2604.13016)
 
 <a id="introduction"></a>
 
-## 📖Introduction
+## 📖Overview
 
-![One-shot OPD versus full-data OPD on mathematical reasoning, and the multi-teacher OPD comparison](figs/main1.png)
+<img src="figs/main1.png" alt="One-shot OPD versus full-data OPD on mathematical reasoning, and the multi-teacher OPD comparison"  />
 
-On-policy distillation (OPD) combines student-generated rollouts with dense token-level supervision from a teacher. Existing work has mainly studied its algorithmic behavior, leaving the role of training data unclear. We examine this role at the data-minimal limit by training on a **single query**. One-shot OPD keeps improving for hundreds of steps and recovers most of full-data OPD's gain across task domains and model families.
-
-We explain this result through the ***states*** visited during training and the ***rate*** at which the student aligns with the teacher. A single query reaches **71.5%** state coverage relative to full-data OPD, with most coverage appearing in the first 100 steps. Adding semantically distinct queries increases state coverage and validation accuracy together, and sixteen queries reach **98.9%** coverage and match full-data training. Yet alignment slows at a similar pace whether OPD trains on one query or all 17k, and even a fixed set of states takes hundreds of steps to absorb.
-
-**OPD is therefore data-overfed but algorithm-starved:** its rollouts quickly expose broad supervision, while the student absorbs that supervision increasingly slowly.
-
-This repository is an empirical study rather than a new algorithm. Its two contributions beyond the phenomenon itself are a pair of diagnostics that can be computed for any OPD run:
-
-- **State coverage:** the fraction of the state-space clusters visited by full-data OPD that a given setting also reaches. It measures the *breadth* of supervision a query set induces, rather than the number of queries it contains.
-- **Absorption rate:** the proportion of the remaining teacher-student distance that one update removes. It measures how fast the student consumes the supervision it is already given.
-
-![Two-column mechanism overview of the data-overfed and algorithm-starved sides](figs/overview.png)
-
-<a id="key-findings"></a>
-
-## 🔍Key Findings
-
-### How much of full-data OPD does a single query recover?
-
-Averaged over MATH-500, AMC 2023, and AIME 2025, one-shot OPD reaches 68.5 at step 300 against 69.8 for full-data OPD, starting from a student at 59.1. That is **87%** of full-data OPD's gain and **69%** of the teacher-student gap, in mathematics, at step 300. The effect also holds for code generation, instruction following, and agentic tool use, and for three different student-teacher families.
-
-![Validation accuracy and training dynamics of one-shot OPD on mathematical reasoning](figs/math_oneshot.png)
-
-The gain is insensitive to query difficulty, response-length cap, and rollout temperature. A query the student never solves is about as effective as one it always solves.
-
-> [!NOTE]
-> Training longer does not close the gap. Over a 1000-step run, one-shot OPD recovers **72%** of full-data OPD's gain, down from 87% at step 300: the one-shot curve flattens while the full-data curve keeps rising. Beyond step 300 the two stay within a band of about 3 points and the recovered fraction moves between 62% and 89%, so what one query "recovers" depends on where you read it. We report both numbers because the difference is part of the finding.
-
-### Why does one query supply so much supervision?
-
-OPD trains on states, not queries. A query and a sampled response produce one state at every token position, each paired with a teacher target, so 64 rollouts per update yield tens of thousands of supervised states from a single query. Measured against the state space full-data OPD visits, one query reaches **71.5%** coverage by step 300, of which 65.9% is already reached by step 100 — the remaining 200 steps add only 5.6 percentage points.
-
-![State coverage and validation accuracy of one-shot OPD against full-data OPD](figs/state_coverage.png)
-
-Coverage, not count, is what an added query is worth. Semantically distinct queries raise coverage and accuracy together, and 16 of them reach **98.9%** coverage and match full-data OPD.
-
-### Why does a single query keep paying off for hundreds of steps?
-
-Because the student absorbs the supervision slowly, and gets slower. The teacher-student distance falls for the whole run, so the student is never stuck, but the absorption rate declines throughout. Crucially, this slowdown is **insensitive to the size of the training set**: OPD trained on 1, 4, 16, or all 17k queries each removes **78% to 84%** of its step-30 distance by step 300.
-
-![Teacher-student distance and absorption rate for OPD trained on 1, 4, 16, and all queries](figs/absorption_rate.png)
-
-An ablation on fixed states points the same way: a run that reuses 64 trajectories sampled once from the initial student still gains accuracy steadily for about 200 steps. A steady supply of fresh states is therefore not what keeps a run going that long.
-
-### Does the picture survive multiple teachers and content-light inputs?
-
-Yes, in both stress tests we ran. In multi-teacher OPD (MOPD), where one student is trained on three domains at once and each query is routed to its domain teacher, **16** semantically diverse queries per domain recover **101%** of full-data MOPD's gain.
-
-![Validation accuracy of one-shot, 16-shot, and full-data multi-teacher OPD](figs/mopd.png)
-
-As a further stress test, we replace the real query with a content-light template and with off-domain [WildChat](https://huggingface.co/datasets/allenai/WildChat-1M) queries.
-
-![Validation accuracy and actor entropy for template and WildChat OPD](figs/template_wildchat.png)
-
-> [!NOTE]
-> Task content and induced state coverage can come apart. Both the template and the WildChat queries track the real-data baseline while spending a third to a half of its rollout tokens, even though less than **1%** of the WildChat queries are math-related. This does not make task content generally dispensable — in-domain content is still worth about a point in mathematics — but it does mean the two can be pulled apart, at least in the settings we tested.
+On-policy distillation (OPD) combines student-generated rollouts with dense token-level supervision from a teacher. Existing work has mainly studied its algorithmic behavior, leaving the role of training data unclear. We examine this role at the data-minimal limit by training on a single query. One-shot OPD keeps improving for hundreds of steps and recovers most of full-data OPD's gain across task domains and model families. We explain this result through the *states* visited during training and the *rate* at which the student aligns with the teacher. A single query reaches 71.5% state coverage relative to full-data OPD, with most coverage appearing in the first 100 steps. Adding semantically distinct queries increases state coverage and validation accuracy together, and sixteen queries reach 98.9% coverage and match full-data training. Yet alignment slows at a similar pace whether OPD trains on one query or all 17k, and even a fixed set of states takes hundreds of steps to absorb. OPD is therefore data-overfed but algorithm-starved. Its rollouts quickly expose broad supervision, while the student absorbs that supervision increasingly slowly. The state-coverage result extends to multi-teacher OPD, where 16 semantically diverse queries per domain match full-data MOPD. As a further stress test, content-light templates and off-domain WildChat queries also approach the real-query baseline. Task content and induced state coverage can therefore come apart. We hope these findings direct future work toward the step efficiency of OPD, and prompt a re-examination of the data and the mechanisms behind its recent successes in frontier post-training.
 
 <a id="getting-started"></a>
 
@@ -187,8 +114,6 @@ launch "$EXPERIMENT_NAME" \
 | `REWARD_WEIGHT_MODE` | `student_p` | Token weighting: `student_p` / `teacher_p` / `none` |
 | `VAL_N` / `VAL_TEMPERATURE` / `VAL_TOP_P` | `16` / `0.7` / `0.9` | Validation sampling, giving `avg@16` |
 
-</details>
-
 > [!NOTE]
 > The two top-K knobs mean different things. `LOG_PROB_TOP_K` changes the training reward; `METRIC_TOP_K` only measures it.
 >
@@ -198,6 +123,8 @@ launch "$EXPERIMENT_NAME" \
 > | `METRIC_TOP_K=K` | top-K is **observability only** | `(B, T)` reverse KL, unchanged | 0 |
 > | both `0` | off | `(B, T)` reverse KL | absent |
 >
+
+</details>
 
 <details>
 <summary><b>Default hyperparameters used in the paper</b></summary>
@@ -276,14 +203,6 @@ If you find this work helpful, please cite us:
   year={2026}
 }
 ```
-
-<a id="Acknowledgement"></a>
-
-## 🌻 Acknowledgement
-
-We implement our OPD and MOPD training extending from [veRL](https://github.com/volcengine/verl). Our students and teachers are public checkpoints from the DeepSeek-R1-Distill, JustRL, Nemotron-Research-Reasoning, Hammer, Llama, Qwen2.5-Coder, and OLMo releases, listed with full identifiers in the setup table above. Our training and evaluation data mainly include [DAPO-Math-17K](https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k), [Open-R1 Codeforces](https://huggingface.co/datasets/open-r1/codeforces), [TACO](https://huggingface.co/datasets/BAAI/TACO), [xLAM-function-calling-60K](https://huggingface.co/datasets/Salesforce/xlam-function-calling-60k), MATH-500, LiveCodeBench, Multi-IF, and BFCL. We use [BGE-M3](https://github.com/FlagOpen/FlagEmbedding) for semantic clustering. Thanks for their great contributions!
-
-We welcome everyone to open an issue if a configuration in this repository does not reproduce the numbers above, and we will address it in the next release.
 
 ## License
 
