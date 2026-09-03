@@ -1,0 +1,50 @@
+# Template-prefix OPD: the student writes its own query instead of reading one
+# from the dataset. The rollout is seeded with a bare template prefix that stops
+# mid-user-turn, so the model continues by writing the query itself and then
+# answering it. The teacher scores that self-generated rollout exactly as in
+# ordinary OPD, so this composes orthogonally with distillation.fsdp_teacher.*
+#
+# Crucially the prefix is NOT built with tokenizer.apply_chat_template -- a chat
+# template would emit a complete, well-formed user turn and there would be
+# nothing left for the student to write.
+
+# Master switch. When true, training rows are produced by
+# verl.utils.dataset.template_dataset.TemplatePromptDataset and routed to the
+# `template_agent` agent loop. Validation still uses real prompts.
+enabled: false
+
+# Self-generated queries shorter than this many characters are counted as
+# rejects by the content filter.
+min_char_length: 20
+
+# Prefix template, used when prefix_mode=template. Placeholders {bos}, {eos},
+# {user}, {assistant}, {system_start} and {system_end} are resolved against the
+# tokenizer's own special tokens, so no model-specific token is hardcoded.
+prefix_template: "{bos}{user}<think>\n"
+
+# Extra literal text appended after the prefix to steer what the student writes.
+prefix_suffix: ""
+
+# How the prefix is built:
+#   template - resolve `prefix_template` placeholders and encode the result.
+#   raw      - render a chat template around a marker and keep only the text
+#              before it, i.e. the model's native "a user turn starts here"
+#              preamble. `system_prompt` applies to this mode only.
+prefix_mode: template
+
+# System prompt injected ahead of the prefix. Only used by prefix_mode=raw.
+system_prompt: null
+
+# Which content filter judges the self-generated queries: math | code
+task: math
+
+# Number of placeholder rows the driver dataset reports. Template mode has no
+# real corpus, so this only decides how many steps an "epoch" lasts.
+dataset_length: 1000000
+
+# data_source tag stamped onto the generated rows, forwarded to the reward fn.
+data_source: template
+
+# Generate ceil(batch_size * oversample_ratio) rollouts so enough survive the
+# content filter, then truncate back to batch_size. 1.0 disables oversampling.
+oversample_ratio: 1.0

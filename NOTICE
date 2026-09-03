@@ -1,0 +1,74 @@
+One-shot OPD
+Copyright 2026 The One-shot OPD authors
+
+This product includes software developed at ByteDance Ltd. and by the verl
+community.
+
+--------------------------------------------------------------------------------
+Vendored upstream: verl
+--------------------------------------------------------------------------------
+
+The `verl/` directory of this repository contains a vendored copy of verl
+0.9.0, redistributed under the Apache License, Version 2.0.
+
+    verl -- Volcano Engine Reinforcement Learning for LLMs
+    https://github.com/volcengine/verl
+    Copyright 2024-2025 Bytedance Ltd. and/or its affiliates
+    Licensed under the Apache License, Version 2.0
+
+The vendored tree is NOT pristine. It has been modified to implement on-policy
+distillation (OPD): 26 files were added and 20 upstream files were modified,
+relative to the upstream 0.9.0 release. The principal additions are the frozen
+teacher worker, the token-level reverse-KL advantage estimators, and the
+top-K distillation policy loss. Modified upstream files retain their original
+ByteDance copyright notices, as required by Apache-2.0 section 4(b)-(c).
+
+Upstream verl itself carries contributions from, among others, Meituan Ltd.,
+the PRIME team, the SGLang Team, BAAI, NVIDIA CORPORATION, Huawei Technologies
+Co., Ltd., z.ai, the SwissAI Initiative, and individual contributors. Their
+copyright notices are retained in the individual source files.
+
+--------------------------------------------------------------------------------
+Third-party components vendored under verl/verl/utils/reward_score/
+--------------------------------------------------------------------------------
+
+LiveCodeBench
+    https://github.com/LiveCodeBench/LiveCodeBench
+    MIT License
+    `code_eval_v2/_lcb_runner.py` is a verbatim copy of the upstream
+    `lcb_runner/evaluation/testing_util.py` at commit 998c52d3. The upstream
+    copyright and permission notice are reproduced in
+    `code_eval_v2/LICENSE.livecodebench`.
+
+PRIME
+    https://github.com/PRIME-RL/PRIME
+    Apache License, Version 2.0
+    Answer normalization and grading helpers under `prime_math/`,
+    `prime_code/`, `ttrl_math/`, and `ttrl_math_v2/`.
+
+NVIDIA CORPORATION
+    Apache License, Version 2.0
+    The sympy-based symbolic graders in `ttrl_math/grader.py`,
+    `ttrl_math_v2/grader.py`, and `prime_math/grader.py`.
+
+EleutherAI lm-evaluation-harness
+    https://github.com/EleutherAI/lm-evaluation-harness
+    MIT License
+    Referenced by `math_reward.py` and `math_dapo.py`.
+
+Search-R1
+    https://github.com/PeterGriffinJin/Search-R1
+    Referenced by `search_r1_like_qa_em.py`.
+
+SandboxFusion
+    https://github.com/bytedance/SandboxFusion
+    Referenced by `sandbox_fusion/`.
+
+--------------------------------------------------------------------------------
+Datasets
+--------------------------------------------------------------------------------
+
+No dataset is distributed with this repository. Every benchmark and training
+corpus is rebuilt from its public source by the scripts in `data/prep/`, and
+each remains subject to the license of its original publisher. The only data
+files shipped here are the two small fixtures under `data/smoke/`.

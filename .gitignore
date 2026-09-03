@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.DS_Store
+.env
+logs/
+results/
+outputs/
+checkpoints/
+swanlab/
+.swanlab_key
+data/*
+!data/prep/
+!data/smoke/
+!data/README.md
+
+*.egg-info/

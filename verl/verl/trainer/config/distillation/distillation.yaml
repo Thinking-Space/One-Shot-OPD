@@ -1,0 +1,189 @@
+# Required when using verl.utils.omega_conf_to_dataclass to instantiate dataclass configs
+_target_: verl.workers.config.DistillationConfig
+
+# specify the default per-component configs
+defaults:
+
+  # <folder_name>@<field_name>.<field_name>: <yaml_file_name>
+
+  # load the default config, then apply the fields in the current yaml
+  # self config override anything above
+  - _self_
+
+# Whether to enable distillation.
+enabled: false
+
+# distillation loss config
+distillation_loss:
+
+  # # Required when using verl.utils.omega_conf_to_dataclass to instantiate dataclass configs
+  _target_: verl.workers.config.DistillationLossConfig
+
+
+  # Loss function mode for distillation
+  loss_mode: k3
+
+  # If distillation loss requires top-k logits, this is the value of k
+  topk: 32
+
+  # Whether to include task rewards alongside distillation loss.
+  use_task_rewards: true
+
+
+  # The coef of the distillation loss when use_task_rewards is true
+  distillation_loss_coef: 1.0
+
+  # Optional max clamp value for distillation loss. If null, no clamping is applied.
+  loss_max_clamp: null
+
+  # Optional min clamp value for log probabilities for stability, e.g., log q - log p where p or q are very close to zero.
+  log_prob_min_clamp: null
+
+  # Whether to incorporate distillation loss as a reward.
+  use_policy_gradient: false
+
+  # Name of the policy loss to use when use_policy_gradient is true.
+  policy_loss_mode: "vanilla"
+
+  # PPO clipping ratio for policy loss.
+  clip_ratio: 0.2
+
+  # Lower bound for PPO clipping ratio.
+  clip_ratio_low: 0.2 
+
+  # Upper bound for PPO clipping ratio.
+  clip_ratio_high: 0.2
+
+
+# Number of GPUs per node in the distillation teacher resource pool
+n_gpus_per_node: 8
+
+# Number of nodes in the distillation teacher resource pool
+nnodes: 0
+
+# multi-teacher configs
+teacher_models:
+
+  # Single-teacher config. This entry is popped when other teacher entries are added, so
+  # using `teacher_model` as one of several keys silently drops it. For
+  # example, the following CLI overrides result in ONLY `teacher_model2` being used:
+  #
+  # distillation.teacher_models.teacher_model.key=openai/gsm8k
+  # distillation.teacher_models.teacher_model.model_path=Qwen/Qwen3-4B
+  # +distillation.teacher_models.teacher_model2.key=hiyouga/geometry3k
+  # +distillation.teacher_models.teacher_model2.model_path=Qwen/Qwen3-VL-4B-Instruct
+  #
+  # Instead, give the first teacher a different name:
+  #
+  # +distillation.teacher_models.teacher_model1.key=openai/gsm8k
+  # +distillation.teacher_models.teacher_model1.model_path=Qwen/Qwen3-4B
+  # +distillation.teacher_models.teacher_model2.key=hiyouga/geometry3k
+  # +distillation.teacher_models.teacher_model2.model_path=Qwen/Qwen3-VL-4B-Instruct
+  teacher_model:
+    _target_: verl.workers.config.DistillationTeacherModelConfig
+    key: null
+    model_path: null
+    num_replicas: 0
+    inference:
+      _target_: verl.workers.config.RolloutConfig
+      name: ${oc.select:actor_rollout_ref.rollout.name}
+      dtype: ${oc.select:actor_rollout_ref.rollout.dtype}
+      gpu_memory_utilization: 0.5
+      enforce_eager: true
+      cudagraph_capture_sizes: null
+      free_cache_engine: true
+      data_parallel_size: 1
+      expert_parallel_size: 1
+      tensor_model_parallel_size: 2
+      max_num_batched_tokens: 8192
+      max_model_len: null
+      max_num_seqs: 1024
+      load_format: auto
+      engine_kwargs: {}
+      limit_images: null
+      enable_chunked_prefill: true
+      enable_prefix_caching: true
+      disable_log_stats: true
+      skip_tokenizer_init: true
+      prompt_length: ${oc.select:actor_rollout_ref.rollout.prompt_length}
+      response_length: ${oc.select:actor_rollout_ref.rollout.response_length}
+      temperature: ${oc.select:actor_rollout_ref.rollout.temperature}
+
+# Key to route examples to the appropriate teacher model in multi-teacher setups. Should correspond to a field in the data proto, e.g., task.
+teacher_key: data_source
+
+# --- OPD (On-Policy Distillation) FSDP teacher -------------------------------
+# Independent of the upstream `teacher_models` block above. Upstream serves
+# teachers as vLLM/SGLang inference replicas behind an async teacher loop; OPD
+# instead runs a frozen teacher under FSDP and takes an exact forward pass over
+# the student's rollout to get per-token log-probs used as a dense reward.
+# The two are mutually exclusive: keep `enabled` (above) false when using this.
+fsdp_teacher:
+
+  # Required when using verl.utils.omega_conf_to_dataclass to instantiate dataclass configs
+  _target_: verl.workers.config.FsdpTeacherConfig
+
+  # Master switch for OPD teacher scoring.
+  enabled: false
+
+  # Single-teacher model path. Ignored when `teachers` is non-empty.
+  model_path: null
+
+  # MOPD: list of teachers, e.g. [{name: math, path: /path/to/math_teacher}, ...]
+  teachers: []
+
+  # MOPD: dataset `ability` value -> teacher name, e.g. {math: math, coding: code}
+  ability_to_teacher: {}
+
+  # If true, an unknown or missing `ability` raises instead of falling back.
+  strict_routing: false
+
+  # Teacher used when routing does not resolve. Defaults to the first teacher.
+  default_teacher: null
+
+  # Teacher forward micro-batch size per GPU.
+  micro_batch_size_per_gpu: 24
+
+  # Teacher parameter dtype.
+  dtype: bfloat16
+
+  use_remove_padding: true
+  use_dynamic_bsz: false
+  forward_max_token_len_per_gpu: 32768
+  ulysses_sequence_parallel_size: 1
+
+  # FSDP settings for the teacher module. The teacher is forward-only, so
+  # offloading params is essentially free.
+  fsdp_config:
+    param_offload: true
+    reshard_after_forward: true
+    fsdp_size: -1
+
+  # Temperature applied to teacher logits before taking log-probs.
+  teacher_temperature: 1.0
+
+  # K for top-K distillation, used as the TRAINING REWARD: the token reward
+  # becomes the (B, T, K) top-K distillation reward instead of the plain
+  # per-token reverse KL. 0 disables it.
+  log_prob_top_k: 0
+
+  # Candidate set for the top-K reward:
+  # only_stu | only_tch | intersection | union | union-intersection
+  top_k_strategy: only_stu
+
+  # How top-K candidates are weighted: student_p | teacher_p | none
+  reward_weight_mode: student_p
+
+  # KL estimator for the token reward.
+  kl_estimator: k1
+
+  # K used for OBSERVABILITY ONLY (0 = off). The student/teacher top-K sets are
+  # computed and the agreement metrics (opd/top_k_overlap_ratio,
+  # opd/top_k_reward_mean, ...) are logged, but the reward stays the plain
+  # reverse KL. Use this to see how much top-K would change the signal before
+  # switching a real run to log_prob_top_k. Ignored when log_prob_top_k > 0.
+  metric_top_k: 0
+
+  # HuggingFace attention backend. flash_attention_2 needs a matching
+  # flash-attn wheel; sdpa is the fallback when that wheel cannot be built.
+  attn_implementation: flash_attention_2
