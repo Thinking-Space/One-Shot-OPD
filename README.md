@@ -10,7 +10,7 @@
 <div align="center">
   <p>
     <a href="#news">🎉 News</a> •
-    <a href="#Overview">📖 Introduction</a> •
+    <a href="#Overview">📖 Overview</a> •
     <a href="#getting-started">✨ Getting Started</a>
  </p>
  <p>
@@ -18,14 +18,14 @@
     <a href="#citation">🎈 Citation</a> 
  </p>
 </div>
----
+
 
 ## 🎉News
 
 - **[2026-09-04]** Part II: We examine the role of training data in on-policy distillation (OPD) at the data-minimal limit by training on a single query, and find that OPD is data-overfed but algorithm-starved. Check it out: [Paper](https://arxiv.org/abs/XXXX.XXXXX).
 - **[2026-04-15]** Part I of this series: [Rethinking On-Policy Distillation of Large Language Models](https://arxiv.org/abs/2604.13016)
 
-<a id="introduction"></a>
+<a id="Overview"></a>
 
 ## 📖Overview
 
@@ -114,20 +114,13 @@ launch "$EXPERIMENT_NAME" \
 | `REWARD_WEIGHT_MODE` | `student_p` | Token weighting: `student_p` / `teacher_p` / `none` |
 | `VAL_N` / `VAL_TEMPERATURE` / `VAL_TOP_P` | `16` / `0.7` / `0.9` | Validation sampling, giving `avg@16` |
 
-> [!NOTE]
 > The two top-K knobs mean different things. `LOG_PROB_TOP_K` changes the training reward; `METRIC_TOP_K` only measures it.
->
-> | Knob | Semantics | `rm_scores` | `opd/top_k_mode` |
-> | --- | --- | --- | --- |
-> | `LOG_PROB_TOP_K=K` | top-K **is** the training reward | `(B, T, K)` | 1 |
-> | `METRIC_TOP_K=K` | top-K is **observability only** | `(B, T)` reverse KL, unchanged | 0 |
-> | both `0` | off | `(B, T)` reverse KL | absent |
->
+
 
 </details>
 
 <details>
-<summary><b>Default hyperparameters used in the paper</b></summary>
+<summary><b>Default hyperparameters for OPD used in the paper</b></summary>
 
 | Item | Value |
 |---|---|
@@ -145,8 +138,6 @@ launch "$EXPERIMENT_NAME" \
 | Gradient clip norm | 1.0 |
 | Max prompt length | 1024 (math); 4096 (code, IF, agentic) |
 | Max response length | 7680 (math, code, IF); 2048 (agentic) |
-
-The mathematical-reasoning runs of the one-shot section optimize the top-`k` advantage with `k = 16`; the code, instruction-following, and agentic runs optimize the sampled-token advantage. MOPD differs in three places: three teachers (math / code / instruction following), `token-mean` replaced by `seq-mean-token-mean`, and a max prompt length of 4096 throughout.
 
 </details>
 
