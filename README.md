@@ -1,10 +1,11 @@
 <div align="center">
   <h1>Rethinking On-Policy Distillation of Large Language Models II: One Training Example</h1>
   <p>
-    <a href="https://arxiv.org/abs/2609.04172"><img src="https://img.shields.io/badge/paper-A42C25?style=for-the-badge&amp;logo=arxiv&amp;logoColor=white" alt="Paper"></a>&nbsp;&nbsp;
+    <a href="https://arxiv.org/pdf/2609.04172"><img src="https://img.shields.io/badge/paper-A42C25?style=for-the-badge&amp;logo=arxiv&amp;logoColor=white" alt="Paper"></a>&nbsp;&nbsp;
     <a href="https://github.com/Thinking-Space/One-Shot-OPD"><img src="https://img.shields.io/badge/One--Shot--OPD-000000?style=for-the-badge&amp;logo=github&amp;logoColor=white" alt="GitHub"></a>&nbsp;&nbsp;
     <a href="https://huggingface.co/papers/2609.04172"><img src="https://img.shields.io/badge/HF--Paper-%23FFD14D?style=for-the-badge&amp;logo=huggingface&amp;logoColor=black" alt="Hugging Face Paper"></a>&nbsp;&nbsp;
     <a href="https://huggingface.co/collections/Thinking-Space/one-shot-opd"><img src="https://img.shields.io/badge/Collection-%23FFD14D?style=for-the-badge&amp;logo=huggingface&amp;logoColor=black" alt="Hugging Face Collection"></a>
+    <a href="https://x.com/HBX_hbx/status/2095716853196747175"><img src="https://img.shields.io/badge/Twitter-%23000000.svg?style=for-the-badge&logo=x&logoColor=white" alt="X Thread"></a>
   </p>
 </div>
 <div align="center">
