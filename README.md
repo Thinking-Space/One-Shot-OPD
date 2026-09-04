@@ -1,9 +1,9 @@
 <div align="center">
   <h1>Rethinking On-Policy Distillation of Large Language Models II: One Training Example</h1>
   <p>
-    <a href="https://arxiv.org/abs/XXXX.XXXXX"><img src="https://img.shields.io/badge/paper-A42C25?style=for-the-badge&amp;logo=arxiv&amp;logoColor=white" alt="Paper"></a>&nbsp;&nbsp;
+    <a href="https://arxiv.org/abs/2609.04172"><img src="https://img.shields.io/badge/paper-A42C25?style=for-the-badge&amp;logo=arxiv&amp;logoColor=white" alt="Paper"></a>&nbsp;&nbsp;
     <a href="https://github.com/Thinking-Space/One-Shot-OPD"><img src="https://img.shields.io/badge/One--Shot--OPD-000000?style=for-the-badge&amp;logo=github&amp;logoColor=white" alt="GitHub"></a>&nbsp;&nbsp;
-    <a href="https://huggingface.co/papers/XXXX.XXXXX"><img src="https://img.shields.io/badge/HF--Paper-%23FFD14D?style=for-the-badge&amp;logo=huggingface&amp;logoColor=black" alt="Hugging Face Paper"></a>&nbsp;&nbsp;
+    <a href="https://huggingface.co/papers/2609.04172"><img src="https://img.shields.io/badge/HF--Paper-%23FFD14D?style=for-the-badge&amp;logo=huggingface&amp;logoColor=black" alt="Hugging Face Paper"></a>&nbsp;&nbsp;
     <a href="https://huggingface.co/collections/Thinking-Space/one-shot-opd"><img src="https://img.shields.io/badge/Collection-%23FFD14D?style=for-the-badge&amp;logo=huggingface&amp;logoColor=black" alt="Hugging Face Collection"></a>
   </p>
 </div>
@@ -22,8 +22,8 @@
 
 ## 🎉News
 
-- **[2026-09-04]** Part II: We examine the role of training data in on-policy distillation (OPD) at the data-minimal limit by training on a single query, and find that OPD is data-overfed but algorithm-starved. Check it out: [Paper](https://arxiv.org/abs/XXXX.XXXXX).
-- **[2026-04-15]** Part I of this series: [Rethinking On-Policy Distillation of Large Language Models](https://arxiv.org/abs/2604.13016)
+- **[2026-09-04]** Part II: We examine the role of training data in on-policy distillation (OPD) at the data-minimal limit by training on a single query, and find that OPD is data-overfed but algorithm-starved. Check it out: [Paper](https://arxiv.org/abs/2609.04172).
+- **[2026-04-15]** Part I of this series: [Rethinking On-Policy Distillation of Large Language Models](https://arxiv.org/abs/2604.13016).
 
 <a id="Overview"></a>
 
@@ -187,10 +187,10 @@ python3 eval/run_if_eval.py multiif --model <hf-dir> --out results/smoke --limit
 If you find this work helpful, please cite us:
 
 ```bibtex
-@article{fu2026oneshotopd,
-  title={Rethinking On-Policy Distillation of Large Language Models II: One Training Example},
-  author={Fu, Zixuan and He, Bingxiang and Zuo, Yuxin and Huang, Haohuan and Zhang, Jinqian and Xiao, Ruhang and Qian, Cheng and Luo, Qinyu and Gao, Huan-ang and Wang, Yudong and Ding, Ning and Liu, Zhiyuan and Xiao, Chaojun},
-  journal={arXiv preprint arXiv:XXXX.XXXXX},
+@article{fu2026rethinking,
+  title={Rethinking on-policy distillation of large language models ii: One training example},
+  author={Fu, Zixuan and He, Bingxiang and Zuo, Yuxin and Huang, Haohuan and Zhang, Jinqian and Xiao, Ruhang and Qian, Cheng and Luo, Qinyu and Gao, Huan-ang and Wang, Yudong and others},
+  journal={arXiv preprint arXiv:2609.04172},
   year={2026}
 }
 ```
