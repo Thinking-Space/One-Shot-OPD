@@ -619,7 +619,7 @@ class MegatronCheckpointManager(BaseCheckpointManager):
         manifest = self._build_checkpoint_manifest(local_path, global_step, saved_any_dist_ckpt)
         manifest_path = get_checkpoint_contents_manifest_path(local_path)
         tmp_path = manifest_path + ".tmp"
-        with open(tmp_path, "w") as f:
+        with open(tmp_path, "w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=2, sort_keys=True)
             f.flush()
             os.fsync(f.fileno())
@@ -1043,7 +1043,7 @@ class MegatronCheckpointManager(BaseCheckpointManager):
         transformer_config_dict = _to_json_safe_config_dict(_config_to_shallow_dict(self.transformer_config))
         transformer_config_path = get_transformer_config_checkpoint_path(local_path)
         # NOTE: With Megatron-Bridge backend, a circular import issue occurs when transformers version >= 5.4.0.
-        with open(transformer_config_path, "w") as f:
+        with open(transformer_config_path, "w", encoding="utf-8") as f:
             json.dump(
                 transformer_config_dict,
                 f,
@@ -1138,7 +1138,7 @@ class MegatronCheckpointManager(BaseCheckpointManager):
             local_latest_checkpointed_iteration = os.path.join(
                 os.path.dirname(os.path.dirname(local_path)), "latest_checkpointed_iteration.txt"
             )
-            with open(local_latest_checkpointed_iteration, "w") as f:
+            with open(local_latest_checkpointed_iteration, "w", encoding="utf-8") as f:
                 f.write(str(global_step))
 
         self.register_checkpoint(local_path, max_ckpt_to_keep)
